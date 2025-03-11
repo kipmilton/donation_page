@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+
+{% block Content %}
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section dark-background">
+
+      <img src="{% static 'assets/img/hero-bg.jpg' %}" class="hero-bg" alt="" data-aos="fade-in">
+
+      <div class="container text-center" data-aos="fade-up" data-aos-delay="100">
+        
+        <h2>Welcome to UBUNTU Donation page</h2>
+        <p>Your contributions goes to  <span class="typed" data-typed-items="Paying School fees, Building schools in refugee camps, Mentoring Scholars"></span></p>
+        <div>
+          <a href="{% url 'myapp:home_page' %}#donate" class="cta-btn">Donate Now</a>
+          <a href="{% url 'myapp:home_page' %}#award" class="cta-btn2">Our Impact</a>
+        </div>
+      </div>
+
+    </section><!-- /Hero Section -->
+
+
+
+<!-- Donate Section --> 
+<section id="donate" class="donate section light-background" style="padding: 60px 0; background: #f9f9f9;">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up" style="text-align: center; margin-bottom: 40px;">
+    <h2 style="font-size: 2.8rem; color: #2c3e50; font-weight: bold;">Be the Change – Support Ubuntu</h2>
+    <p style="color: #555; font-size: 1.2rem; max-width: 700px; margin: 10px auto;">
+      Your generosity can help a child get the education they deserve. Join us in creating a better future.
+    </p>
+  </div><!-- End Section Title -->
+
+  <div class="container" style="text-align: center; padding-top: 30px;">
+    <div class="donation-content">
+      <h3 style="color: #333; font-size: 1.8rem; font-weight: 600; margin-bottom: 20px;">Make a Difference with Just One Click</h3>
+      <p style="color: #666; font-size: 1.1rem; max-width: 650px; margin: 0 auto 30px;">
+        Every donation helps a child go to school, buy books, and build a brighter future. 
+      </p>
+      
+      <!-- M-Pesa Payment Button -->
+      <a href="{% url 'myapp:pay' %}" style="
+        display: inline-block;
+        background: #4CAF50;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+        padding: 15px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: background 0.3s ease, transform 0.2s ease;
+      " 
+      onmouseover="this.style.background='#45a049'; this.style.transform='scale(1.05)';"
+      onmouseout="this.style.background='#4CAF50'; this.style.transform='scale(1)';">
+        Donate with M-Pesa
+      </a>
+
+      <p style="color: #888; font-size: 1rem; margin-top: 20px;">
+        Your kindness fuels dreams. Every contribution brings hope. Thank you!
+      </p>
+    </div>
+  </div>
+
+</section><!-- /Donate Section -->
+
+
+    
+
+    <!-- About Section -->
+<section id="about" class="about section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>About Us</h2>
+    <p>Ubuntu Fund Drive is a non-profit initiative dedicated to connecting donors with underprivileged students in Kenya. Through generous contributions, we provide financial support for school fees, uniforms, shopping essentials, and mentorship programs to empower the next generation.</p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+        <img src="{% static 'assets/img/about.jpg' %}" class="img-fluid" alt="Ubuntu Fund Drive">
+      </div>
+
+      <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+        <h3>Our Mission: Bridging the Gap in Education</h3>
+        <p class="fst-italic">
+          At Ubuntu Fund Drive, we believe every child deserves an education. By linking donors to needy students, we ensure that financial barriers do not stand in the way of academic success. Our initiative not only covers school fees but also provides essential learning resources and mentorship programs.
+        </p>
+        <ul>
+          <li><i class="bi bi-check-circle"></i> <span>Providing full scholarships covering tuition, school uniforms, and shopping essentials.</span></li>
+          <li><i class="bi bi-check-circle"></i> <span>Offering mentorship programs to guide and inspire students.</span></li>
+          <li><i class="bi bi-check-circle"></i> <span>Creating lasting partnerships between donors and beneficiaries to foster long-term educational success.</span></li>
+        </ul>
+        <a href="{% url 'myapp:sponsor_home' %}" class="read-more"><span>Support a Student Today!</span><i class="bi bi-arrow-right"></i></a>
+      </div>
+
+    </div>
+
+  </div>
+
+</section><!-- /About Section -->
+
+
+    <!-- Awards Section -->
+<section id="award" class="features section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Awards & Recognitions</h2>
+    <p>Ubuntu Fund Drive has been recognized by esteemed institutions for our commitment to providing educational opportunities to underprivileged students across Kenya.</p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <div class="col-xl-3 col-md-6" data-aos="zoom-in" data-aos-delay="100">
+        <div class="feature-box orange">
+          <i class="bi bi-award"></i>
+          <h4>Excellence in Education Award - Alliance High School</h4>
+          <p>In recognition of our dedication to supporting students from financially challenged backgrounds, Alliance High School honored Ubuntu Fund Drive for bridging the education gap through scholarships and mentorship programs.</p>
+        </div>
+      </div><!-- End Feature Box -->
+
+      <div class="col-xl-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+        <div class="feature-box blue">
+          <i class="bi bi-patch-check"></i>
+          <h4>Community Impact Award - Maseno School</h4>
+          <p>Maseno School acknowledged our efforts in sponsoring needy students and providing them with educational materials, school uniforms, and personal development mentorship to ensure they thrive academically and socially.</p>
+        </div>
+      </div><!-- End Feature Box -->
+
+      <div class="col-xl-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+        <div class="feature-box green">
+          <i class="bi bi-sunrise"></i>
+          <h4>Humanitarian Recognition - SDA Churches of Kenya</h4>
+          <p>The SDA Churches of Kenya awarded us for our dedication to uplifting underprivileged students by ensuring their school fees, basic needs, and mentorship support are fully covered through donor contributions.</p>
+        </div>
+      </div><!-- End Feature Box -->
+
+      <div class="col-xl-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">
+        <div class="feature-box red">
+          <i class="bi bi-shield-check"></i>
+          <h4>Education Support Excellence - Red Cross Kenya</h4>
+          <p>Red Cross Kenya recognized Ubuntu Fund Drive for our impact in ensuring that vulnerable students receive the necessary financial support to stay in school and achieve their dreams, helping create a brighter future.</p>
+        </div>
+      </div><!-- End Feature Box -->
+
+    </div>
+
+  </div>
+
+</section><!-- /Awards Section -->
+
+
+    <!-- Call To Action Section -->
+    <section id="call-to-action" class="call-to-action section dark-background">
+
+      <img src="{% static 'assets/img/cta-bg.jpg' %}" alt="">
+
+      <div class="container">
+
+        <div class="row" data-aos="zoom-in" data-aos-delay="100">
+          <div class="col-xl-9 text-center text-xl-start">
+            <h3>Give A Smile</h3>
+            <p>Every year, Ubuntu helps to bring a smile to hundreds of families across Kenya, that number can change to a thousand with your generous support, click on the link to make a change now.</p>
+          </div>
+          <div class="col-xl-3 cta-btn-container text-center">
+            <a class="cta-btn align-middle" href="{% url 'myapp:sponsor_home' %}">Donate Now</a>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Call To Action Section -->
+
+
+    <!-- Contact Section -->
+<section id="contact" class="contact section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Contact</h2>
+    <p>We are in great need of donors, whether individuals, groups, or organizations. Contact us below to become part of our family. Welcome!</p>
+  </div><!-- End Section Title -->
+
+  <div class="container" data-aos="fade" data-aos-delay="100">
+
+    <div class="row gy-4">
+
+      <div class="col-lg-4">
+        <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+          <i class="bi bi-geo-alt flex-shrink-0"></i>
+          <div>
+            <h3>Address</h3>
+            <p>2. 879 Kahawa Wendani, Nairobi - Kenya</p>
+          </div>
+        </div><!-- End Info Item -->
+
+        <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+          <i class="bi bi-telephone flex-shrink-0"></i>
+          <div>
+            <h3>Call Us</h3>
+            <p>+254 765 009 972</p>
+          </div>
+        </div><!-- End Info Item -->
+
+        <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+          <i class="bi bi-envelope flex-shrink-0"></i>
+          <div>
+            <h3>Email Us</h3>
+            <p>info@ubuntu.com</p>
+          </div>
+        </div><!-- End Info Item -->
+
+      </div>
+
+      <div class="col-lg-8">
+        <!-- Contact Us Button -->
+        <div class="contact-button-container" data-aos="fade-up" data-aos-delay="200">
+          <p>If you'd like to get in touch with us, we are here to answer any question, and hopefully find new patners who belive in our mission of changing lives together. Click the button below:</p>
+          <div class="col-md-12 text-center">
+            <a href="mailto:jared@gmail.com?subject=Contact%20Us" class="btn btn-primary">Contact Us</a>
+          </div>
+        </div><!-- End Contact Button -->
+      </div><!-- End Button Container -->
+
+    </div>
+
+  </div>
+
+</section><!-- /Contact Section -->
+
+  </main>
+
+  
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/typed.js/typed.umd.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+
+</html>
+
+{% endblock %}

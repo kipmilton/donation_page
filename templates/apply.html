@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Apply for Scholarship{% endblock %}
+
+{% block Content %}
+<div class="container py-5">
+    <div><br><br><br></div>
+    <style>#header {
+      background-color: #000 !important;
+  }</style>
+    <h2 class="text-center mb-4">Apply for Scholarship</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Submit Application</button>
+    </form>
+</div>
+{% endblock %}

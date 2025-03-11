@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Sponsor{% endblock %}
+
+{% block Content %}
+<div class="container py-5">
+    <div><br><br><br></div>
+    <style>#header {
+      background-color: #000 !important;
+  }</style>
+    <h2 class="text-center mb-4">Scholarship Applicants</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>School</th>
+                <th>Class</th>
+                <th>Guardian's Phone</th>
+                <th>Annual Cost</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.name }}</td>
+                <td>{{ student.age }}</td>
+                <td>{{ student.school }}</td>
+                <td>{{ student.student_class }}</td>
+                <td>{{ student.guardian_phone }}</td>
+                <td>${{ student.annual_cost }}</td>
+                <td><a href="{% url 'myapp:sponsor' student.id %}" class="btn btn-primary">Sponsor</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

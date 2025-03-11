@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Sponsor a Student{% endblock %}
+
+{% block Content %}
+<div class="container py-5">
+    <div><br><br><br></div>
+    <style>#header {
+      background-color: #000 !important;
+  }</style>
+    <h2 class="text-center mb-4">Sponsor {{ student.name }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Your Name</label>
+            <input type="text" name="sponsor_name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Your Email</label>
+            <input type="email" name="sponsor_email" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Sponsor</button>
+    </form>
+
+    {% if student.supportive_documents %}
+        <div class="mt-4">
+            <h4>Uploaded Documents:</h4>
+            <a href="{{ student.supportive_documents.url }}" target="_blank" class="btn btn-info">Download Supportive Documents</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
