@@ -13,6 +13,8 @@ from .models import StudentApplication, SponsorSelection
 from .forms import StudentApplicationForm
 from myapp.credentials import LipanaMpesaPpassword, MpesaAccessToken
 import requests
+from requests.auth import HTTPBasicAuth
+from .models import StudentApplication
 
 
 # Create your views here.
@@ -67,9 +69,6 @@ def register(request):
     return render(request, 'accounts/register.html')
 
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import StudentApplication
 
 @login_required
 def admin_dashboard(request):
