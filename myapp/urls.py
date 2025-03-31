@@ -17,7 +17,11 @@ urlpatterns = [
     path('stk/', views.stk, name='stk'),
     path('token/', views.token, name='token'),
     path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
-    path('admin_download_students/', views.download_students, name='download_students'),
+    path('download-students-pdf/', views.download_students_pdf, name='download_students_pdf'),
+    path('download-donors-pdf/', views.download_donors_pdf, name='download_donors_pdf'),
+    path('download-student-report-pdf/<int:student_id>/', views.download_student_report_pdf, name='download_student_report_pdf'),
+    path('download-donor-report-pdf/<int:donor_id>/', views.download_donor_report_pdf, name='download_donor_report_pdf'),
+    path('download-users-pdf/', views.download_users_pdf, name='download_users_pdf'),
 ]   
 if settings.DEBUG:  # Ensure this only runs during development
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

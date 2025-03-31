@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 from pyexpat.errors import messages
 from django.shortcuts import redirect, render
@@ -15,6 +16,7 @@ from myapp.credentials import LipanaMpesaPpassword, MpesaAccessToken
 import requests
 from requests.auth import HTTPBasicAuth
 from .models import StudentApplication
+from myapp import models
 
 
 # Create your views here.
@@ -72,51 +74,237 @@ def register(request):
 
 @login_required
 def admin_dashboard(request):
-    # Check if the user is an admin
+    
     if not request.user.is_staff:
-        return redirect('myapp:home_page')  # Or show a 403 error if preferred
+        return redirect('myapp:home_page')
 
-    # Get all student applications
+    
     students = StudentApplication.objects.all()
 
     return render(request, 'admin_dashboard.html', {'students': students})
 
 
 
-import csv
+
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from .models import StudentApplication
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from .models import StudentApplication, SponsorSelection
 
-@login_required
-def download_students(request):
-    if not request.user.is_staff:
-        return redirect('myapp:home_page')
-
-    # Create the HTTP response with CSV content
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="students_list.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(['Name', 'School', 'Class', 'Guardian Phone', 'Annual Cost', 'Sponsored'])
-    
-    # Write student data to the CSV
+def download_students_pdf(request):
+    # Fetch all students
     students = StudentApplication.objects.all()
-    for student in students:
-        writer.writerow([student.name, student.school, student.student_class, student.guardian_phone, student.annual_cost, student.is_sponsored])
 
+    # Create a file-like buffer to receive PDF data
+    buffer = BytesIO()
+
+    # Create the PDF object, using the buffer as its "file"
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Set up the PDF content
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Students List Report")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(100, 730, f"Total Students: {students.count()}")
+
+    # Add a table header
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(100, 710, "Name")
+    pdf.drawString(250, 710, "School")
+    pdf.drawString(400, 710, "Class")
+    pdf.drawString(500, 710, "Annual Cost")
+    pdf.drawString(600, 710, "Sponsored")
+
+    # Add student details
+    pdf.setFont("Helvetica", 12)
+    y = 690
+    for student in students:
+        pdf.drawString(100, y, student.name)
+        pdf.drawString(250, y, student.school)
+        pdf.drawString(400, y, student.student_class)
+        pdf.drawString(500, y, f"Ksh. {student.annual_cost}")
+        pdf.drawString(600, y, "Yes" if student.is_sponsored else "No")
+        y -= 20  # Move to the next line
+
+    # Close the PDF object cleanly
+    pdf.showPage()
+    pdf.save()
+
+    # File response with the PDF
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="students_list_report.pdf"'
+    return response
+
+def download_donors_pdf(request):
+    # Fetch all donors
+    donors = SponsorSelection.objects.all()
+
+    # Create a file-like buffer to receive PDF data
+    buffer = BytesIO()
+
+    # Create the PDF object, using the buffer as its "file"
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Set up the PDF content
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Donors List Report")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(100, 730, f"Total Donors: {donors.count()}")
+
+    # Add a table header
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(100, 710, "Donor Name")
+    pdf.drawString(250, 710, "Donor Email")
+    pdf.drawString(400, 710, "Sponsored Student")
+    pdf.drawString(550, 710, "Date Selected")
+
+    # Add donor details
+    pdf.setFont("Helvetica", 12)
+    y = 690
+    for donor in donors:
+        pdf.drawString(100, y, donor.sponsor_name)
+        pdf.drawString(250, y, donor.sponsor_email)
+        pdf.drawString(400, y, donor.student.name)
+        pdf.drawString(550, y, donor.date_selected.strftime("%Y-%m-%d"))
+        y -= 20  # Move to the next line
+
+    # Close the PDF object cleanly
+    pdf.showPage()
+    pdf.save()
+
+    # File response with the PDF
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="donors_list_report.pdf"'
     return response
 
 
 
 
+def download_student_report_pdf(request, student_id):
+    # Fetch the specific student
+    student = StudentApplication.objects.get(id=student_id)
+    sponsors = SponsorSelection.objects.filter(student=student)
+
+    # Create a file-like buffer to receive PDF data
+    buffer = BytesIO()
+
+    # Create the PDF object, using the buffer as its "file"
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Set up the PDF content
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Student Report")
+    pdf.setFont("Helvetica", 12)
+    
+    # Student details
+    pdf.drawString(100, 730, f"Name: {student.name}")
+    pdf.drawString(100, 710, f"School: {student.school}")
+    pdf.drawString(100, 690, f"Class: {student.student_class}")
+    pdf.drawString(100, 670, f"Guardian Phone: {student.guardian_phone}")
+    pdf.drawString(100, 650, f"Annual Cost: Ksh. {student.annual_cost}")
+    pdf.drawString(100, 630, f"Amount Paid: Ksh. {student.amount_paid}")
+    pdf.drawString(100, 610, f"Balance: Ksh. {student.balance}")
+    pdf.drawString(100, 590, f"Sponsored: {'Fully Sponsored' if student.is_sponsored else 'Partially Sponsored'}")
+
+    # Sponsors list
+    pdf.drawString(100, 550, "Sponsors:")
+    y = 530
+    for sponsor in sponsors:
+        pdf.drawString(120, y, f"- {sponsor.sponsor_name} ({sponsor.sponsor_email}): Ksh. {sponsor.amount_contributed} on {sponsor.date_selected.strftime('%Y-%m-%d')}")
+        y -= 20
+        if y < 50:  # Add new page if running out of space
+            pdf.showPage()
+            y = 750
+
+    # Close the PDF object cleanly
+    pdf.showPage()
+    pdf.save()
+
+    # File response with the PDF
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{student.name}_report.pdf"'
+    return response
 
 
+# def download_student_report_pdf(request, student_id):
+#     # Fetch the specific student
+#     student = StudentApplication.objects.get(id=student_id)
+
+#     # Create a file-like buffer to receive PDF data
+#     buffer = BytesIO()
+
+#     # Create the PDF object, using the buffer as its "file"
+#     pdf = canvas.Canvas(buffer, pagesize=letter)
+
+#     # Set up the PDF content
+#     pdf.setFont("Helvetica-Bold", 16)
+#     pdf.drawString(100, 750, "Student Report")
+#     pdf.setFont("Helvetica", 12)
+#     pdf.drawString(100, 730, f"Name: {student.name}")
+#     pdf.drawString(100, 710, f"School: {student.school}")
+#     pdf.drawString(100, 690, f"Class: {student.student_class}")
+#     pdf.drawString(100, 670, f"Guardian Phone: {student.guardian_phone}")
+#     pdf.drawString(100, 650, f"Annual Cost: Ksh. {student.annual_cost}")
+#     pdf.drawString(100, 630, f"Sponsored: {'Yes' if student.is_sponsored else 'No'}")
+
+#     # Close the PDF object cleanly
+#     pdf.showPage()
+#     pdf.save()
+
+#     # File response with the PDF
+#     buffer.seek(0)
+#     response = HttpResponse(buffer, content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="{student.name}_report.pdf"'
+#     return response
+
+
+
+def download_donor_report_pdf(request, donor_id):
+    # Fetch the specific donor
+    donor = SponsorSelection.objects.get(id=donor_id)
+
+    # Create a file-like buffer to receive PDF data
+    buffer = BytesIO()
+
+    # Create the PDF object, using the buffer as its "file"
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Set up the PDF content
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Donor Report")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(100, 730, f"Donor Name: {donor.sponsor_name}")
+    pdf.drawString(100, 710, f"Donor Email: {donor.sponsor_email}")
+    pdf.drawString(100, 690, f"Sponsored Student: {donor.student.name}")
+    pdf.drawString(100, 670, f"Date Selected: {donor.date_selected.strftime('%Y-%m-%d')}")
+
+    # Close the PDF object cleanly
+    pdf.showPage()
+    pdf.save()
+
+    # File response with the PDF
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{donor.sponsor_name}_report.pdf"'
+    return response
+
+
+
+@login_required
 def sponsor_home(request):
-    students = StudentApplication.objects.filter(is_sponsored=False)
+    # Show students who still need sponsorship
+    students = [student for student in StudentApplication.objects.all() 
+               if student.amount_paid < student.annual_cost]
     return render(request, 'sponsor_home.html', {'students': students})
 
-# views.py
+
+
+
+@login_required
 def apply(request):
     if request.method == 'POST':
         form = StudentApplicationForm(request.POST, request.FILES)  # Include request.FILES for file uploads
@@ -128,21 +316,50 @@ def apply(request):
     return render(request, 'apply.html', {'form': form})
 
 
+
+
+@login_required
 def sponsor(request, student_id):
     student = StudentApplication.objects.get(id=student_id)
+    
     if request.method == 'POST':
         sponsor_name = request.POST.get('sponsor_name')
         sponsor_email = request.POST.get('sponsor_email')
-        SponsorSelection.objects.create(student=student, sponsor_name=sponsor_name, sponsor_email=sponsor_email)
-        student.is_sponsored = True
-        student.save()
-        return redirect('myapp:home_page')
+        amount_contributed = Decimal(request.POST.get('amount_contributed', 0))
+        
+        # Validate the amount
+        if amount_contributed <= 0:
+            messages.error(request, "Amount must be greater than zero")
+            return render(request, 'sponsor.html', {'student': student})
+            
+        if amount_contributed > student.balance:
+            messages.error(request, f"Amount exceeds remaining balance of Ksh. {student.balance}")
+            return render(request, 'sponsor.html', {'student': student})
+        
+        # Create the sponsorship record
+        sponsorship = SponsorSelection.objects.create(
+            student=student,
+            sponsor_name=sponsor_name,
+            sponsor_email=sponsor_email,
+            amount_contributed=amount_contributed
+        )
+        
+        # Update student's paid amount
+        student.amount_paid += amount_contributed
+        student.update_sponsorship_status()
+        
+        messages.success(request, f"Thank you for your sponsorship of Ksh. {amount_contributed}!")
+        return redirect('myapp:pay')  # Redirect to payment page
+    
     return render(request, 'sponsor.html', {'student': student})
 
 
 
-# Adding the mpesa functions
 
+
+
+# Adding the mpesa functions
+@login_required
 def pay(request):
     """ Renders the form to pay """
     storage = messages.get_messages(request)
@@ -188,7 +405,7 @@ def stk(request):
             "PartyB": LipanaMpesaPpassword.Business_short_code,
             "PhoneNumber": phone,
             "CallBackURL": "https://yourdomain.com/callback-url/",
-            "AccountReference": "MiltonDNets",
+            "AccountReference": "UBUNTU",
             "TransactionDesc": "Pay for IT"
         }
 
@@ -207,3 +424,59 @@ def stk(request):
             messages.error(request, f"An unexpected error occurred: {e}")
             return redirect("myapp:pay")
     return redirect("myapp:pay")
+
+
+
+
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
+from django.contrib.auth.models import User
+
+@login_required
+def download_users_pdf(request):
+    if not request.user.is_superuser:
+        return redirect('myapp:home_page')  # Only superusers can access this
+
+    # Fetch all users
+    users = User.objects.all()
+
+    # Create a file-like buffer to receive PDF data
+    buffer = BytesIO()
+
+    # Create the PDF object, using the buffer as its "file"
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Set up the PDF content
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(100, 750, "Users List Report")
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(100, 730, f"Total Users: {users.count()}")
+
+    # Add a table header (without First and Last Name)
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(100, 710, "Username")
+    pdf.drawString(250, 710, "Email")
+    pdf.drawString(450, 710, "Is Superuser")
+    pdf.drawString(550, 710, "Is Staff")
+
+    # Add user details (without First and Last Name)
+    pdf.setFont("Helvetica", 12)
+    y = 690
+    for user in users:
+        pdf.drawString(100, y, user.username)
+        pdf.drawString(250, y, user.email)
+        pdf.drawString(450, y, "Yes" if user.is_superuser else "No")
+        pdf.drawString(550, y, "Yes" if user.is_staff else "No")
+        y -= 20  # Move to the next line
+
+    # Close the PDF object cleanly
+    pdf.showPage()
+    pdf.save()
+
+    # File response with the PDF
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="users_list_report.pdf"'
+    return response

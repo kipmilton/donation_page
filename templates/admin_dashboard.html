@@ -7,9 +7,18 @@
 <div class="container py-5">
     <div><br><br><br></div>
     <style>#header {
-      background-color: #000 !important;
-  }</style>
+      background-color: #970a0a !important;
+  }
+  #header {
+    background-color: #a01818 !important;}
+    </style>
     <h2 class="text-center mb-4">Admin Dashboard</h2>
+    <!-- Buttons to download reports -->
+    <div class="text-center mt-4">
+        <a href="{% url 'myapp:download_students_pdf' %}" class="btn btn-success">Download Students List (PDF)</a>
+        <a href="{% url 'myapp:download_donors_pdf' %}" class="btn btn-success">Download Donors List (PDF)</a>
+        <a href="{% url 'myapp:download_users_pdf' %}" class="btn btn-success">Download Users List (PDF)</a>
+    </div>
 
     <table class="table table-striped">
         <thead>
@@ -29,17 +38,21 @@
                     <td>{{ student.school }}</td>
                     <td>{{ student.student_class }}</td>
                     <td>Ksh. {{ student.annual_cost }}</td>
-                    <td>{{ student.is_sponsored|yesno:"Sponsored,Not Sponsored" }}</td>
+                    <td>
+                        {% if student.is_sponsored %}
+                            Fully Sponsored
+                        {% else %}
+                            Partially Sponsored (Ksh. {{ student.amount_paid }}/{{ student.annual_cost }})
+                        {% endif %}
+                    </td>
                     <td>
                         <!-- Add buttons or actions to view/edit/delete -->
                         <a href="{% url 'myapp:sponsor' student.id %}" class="btn btn-primary">Sponsor</a>
+                        <a href="{% url 'myapp:download_student_report_pdf' student.id %}" class="btn btn-info">Download Report</a>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <!-- Button to download the list -->
-    <a href="{% url 'myapp:download_students' %}" class="btn btn-success">Download List</a>
 </div>
 {% endblock %}

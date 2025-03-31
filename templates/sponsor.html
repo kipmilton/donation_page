@@ -1,32 +1,85 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}Sponsor a Student{% endblock %}
 
 {% block Content %}
 <div class="container py-5">
-    <div><br><br><br></div>
-    <style>#header {
-      background-color: #000 !important;
-  }</style>
-    <h2 class="text-center mb-4">Sponsor {{ student.name }}</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label class="form-label">Your Name</label>
-            <input type="text" name="sponsor_name" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Your Email</label>
-            <input type="email" name="sponsor_email" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Sponsor</button>
-    </form>
+    <div class="mt-5"></div>
+    <br><br>
+    
+    <style>
+        #header {
+            background-color: #000 !important;
+        }
+        .sponsor-container {
+            max-width: 600px;
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .sponsor-title {
+            color: #004085;
+            font-weight: bold;
+        }
+        .sponsor-container form {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .sponsor-container button {
+            width: 100%;
+            font-size: 1.1rem;
+            padding: 10px;
+            font-weight: bold;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .sponsor-container button:hover {
+            background-color: #218838;
+        }
+        .student-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
 
-    {% if student.supportive_documents %}
-        <div class="mt-4">
-            <h4>Uploaded Documents:</h4>
-            <a href="{{ student.supportive_documents.url }}" target="_blank" class="btn btn-info">Download Supportive Documents</a>
+    <div class="sponsor-container mx-auto">
+        <h2 class="text-center sponsor-title mb-4">Sponsor {{ student.name }}</h2>
+        
+        <div class="student-info">
+            <h5>Student Information</h5>
+            <p><strong>School:</strong> {{ student.school }}</p>
+            <p><strong>Class:</strong> {{ student.student_class }}</p>
+            <p><strong>Annual Cost:</strong> Ksh. {{ student.annual_cost }}</p>
+            <p><strong>Amount Paid:</strong> Ksh. {{ student.amount_paid }}</p>
+            <p><strong>Balance:</strong> Ksh. {{ student.balance }}</p>
         </div>
-    {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="sponsor_name">Your Name</label>
+                <input type="text" class="form-control" id="sponsor_name" name="sponsor_name" required>
+            </div>
+            <div class="form-group">
+                <label for="sponsor_email">Your Email</label>
+                <input type="email" class="form-control" id="sponsor_email" name="sponsor_email" required>
+            </div>
+            <div class="form-group">
+                <label for="amount_contributed">Amount to Contribute (Ksh.)</label>
+                <input type="number" class="form-control" id="amount_contributed" name="amount_contributed" 
+                       min="1" max="{{ student.balance }}" required>
+                <small class="form-text text-muted">Maximum amount: Ksh. {{ student.balance }}</small>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Proceed to Payment</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

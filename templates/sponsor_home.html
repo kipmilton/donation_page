@@ -5,9 +5,21 @@
 {% block Content %}
 <div class="container py-5">
     <div><br><br><br></div>
-    <style>#header {
-      background-color: #000 !important;
-  }</style>
+    <style>
+        #header {
+            background-color: #8d0f0f !important;
+        }
+        #footer {
+            background-color: #9e1818 !important;
+        }
+        .sponsor-form {
+            display: none;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
     <h2 class="text-center mb-4">Scholarship Applicants</h2>
     <table class="table table-bordered">
         <thead>
@@ -18,6 +30,7 @@
                 <th>Class</th>
                 <th>Guardian's Phone</th>
                 <th>Annual Cost</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -29,11 +42,66 @@
                 <td>{{ student.school }}</td>
                 <td>{{ student.student_class }}</td>
                 <td>{{ student.guardian_phone }}</td>
-                <td>${{ student.annual_cost }}</td>
-                <td><a href="{% url 'myapp:sponsor' student.id %}" class="btn btn-primary">Sponsor</a></td>
+                <td>Ksh.{{ student.annual_cost }}</td>
+                <td>
+                    {% if student.is_sponsored %}
+                        Fully Sponsored
+                    {% else %}
+                        Needs Ksh. {{ student.balance }} more
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not student.is_sponsored %}
+                        <button class="btn btn-primary sponsor-btn" data-student-id="{{ student.id }}">
+                            Sponsor
+                        </button>
+                        <div id="sponsor-form-{{ student.id }}" class="sponsor-form">
+                            <form method="POST" action="{% url 'myapp:sponsor' student.id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label>Your Name</label>
+                                    <input type="text" name="sponsor_name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Your Email</label>
+                                    <input type="email" name="sponsor_email" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Amount to Contribute (Ksh.)</label>
+                                    <input type="number" name="amount_contributed" class="form-control" 
+                                           min="1" max="{{ student.balance }}" required>
+                                    <small class="text-muted">Max: Ksh. {{ student.balance }}</small>
+                                </div>
+                                <button type="submit" class="btn btn-success mt-2">Confirm Sponsorship</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <span class="text-success">Fully Sponsored</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle sponsor form visibility
+    document.querySelectorAll('.sponsor-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const studentId = this.getAttribute('data-student-id');
+            const form = document.getElementById(`sponsor-form-${studentId}`);
+            
+            // Hide all other forms first
+            document.querySelectorAll('.sponsor-form').forEach(f => {
+                if (f !== form) f.style.display = 'none';
+            });
+            
+            // Toggle current form
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        });
+    });
+});
+</script>
 {% endblock %}
