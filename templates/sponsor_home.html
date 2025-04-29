@@ -20,7 +20,24 @@
             margin-top: 10px;
         }
     </style>
-    <h2 class="text-center mb-4">Scholarship Applicants</h2>
+
+<h2 class="text-center mb-4">Scholarship Applicants</h2>
+
+<div class="text-center mb-4">
+  <h5>
+    Total Amount Contributed: 
+    <span style="color: green;">
+      Ksh. {{ total_contributed|floatformat:0 }}
+    </span>
+  </h5>
+  <h5>
+    Total Balance Remaining: 
+    <span style="color: red;">
+      Ksh. {{ total_balance|floatformat:0 }}
+    </span>
+  </h5>
+</div>
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -56,7 +73,7 @@
                             Sponsor
                         </button>
                         <div id="sponsor-form-{{ student.id }}" class="sponsor-form">
-                            <form method="POST" action="{% url 'myapp:sponsor' student.id %}">
+                            <form method="POST" action="{% url 'myapp:sponsor' student.id %}" class="sponsor-form-element" data-student-name="{{ student.name }}" data-student-balance="{{ student.balance }}">
                                 {% csrf_token %}
                                 <div class="form-group">
                                     <label>Your Name</label>
@@ -86,22 +103,43 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Toggle sponsor form visibility
-    document.querySelectorAll('.sponsor-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const studentId = this.getAttribute('data-student-id');
-            const form = document.getElementById(`sponsor-form-${studentId}`);
-            
-            // Hide all other forms first
-            document.querySelectorAll('.sponsor-form').forEach(f => {
-                if (f !== form) f.style.display = 'none';
+    document.addEventListener('DOMContentLoaded', function() {
+      
+        document.querySelectorAll('.sponsor-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const studentId = this.getAttribute('data-student-id');
+                const form = document.getElementById(`sponsor-form-${studentId}`);
+                
+                
+                document.querySelectorAll('.sponsor-form').forEach(f => {
+                    if (f !== form) f.style.display = 'none';
+                });
+                
+                
+                form.style.display = form.style.display === 'block' ? 'none' : 'block';
             });
-            
-            // Toggle current form
-            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        });
+    
+    
+        document.querySelectorAll('.sponsor-form-element').forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                const sponsorName = this.querySelector('input[name="sponsor_name"]').value;
+                const amountContributed = this.querySelector('input[name="amount_contributed"]').value;
+                const studentName = this.getAttribute('data-student-name');
+                const studentBalance = this.getAttribute('data-student-balance');
+    
+                
+                alert(`Hey ${sponsorName},\n\nThanks for sponsoring ${studentName} who owes us Ksh ${studentBalance}.\n\nYou will be prompted to pay Ksh ${amountContributed} Via Mpesa.\n\nThank you!`);
+    
+             
+                this.submit();
+            });
         });
     });
-});
-</script>
+    </script>
+    
+
+
 {% endblock %}

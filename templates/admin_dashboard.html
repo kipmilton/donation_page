@@ -7,13 +7,12 @@
 <div class="container py-5">
     <div><br><br><br></div>
     <style>#header {
-      background-color: #970a0a !important;
+      background-color:rgb(12, 230, 48) !important;
   }
   #header {
     background-color: #a01818 !important;}
     </style>
     <h2 class="text-center mb-4">Admin Dashboard</h2>
-    <!-- Buttons to download reports -->
     <div class="text-center mt-4">
         <a href="{% url 'myapp:download_students_pdf' %}" class="btn btn-success">Download Students List (PDF)</a>
         <a href="{% url 'myapp:download_donors_pdf' %}" class="btn btn-success">Download Donors List (PDF)</a>
@@ -46,7 +45,6 @@
                         {% endif %}
                     </td>
                     <td>
-                        <!-- Add buttons or actions to view/edit/delete -->
                         <a href="{% url 'myapp:sponsor' student.id %}" class="btn btn-primary">Sponsor</a>
                         <a href="{% url 'myapp:download_student_report_pdf' student.id %}" class="btn btn-info">Download Report</a>
                     </td>

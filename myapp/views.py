@@ -294,12 +294,33 @@ def download_donor_report_pdf(request, donor_id):
 
 
 
-@login_required
 def sponsor_home(request):
-    # Show students who still need sponsorship
-    students = [student for student in StudentApplication.objects.all() 
-               if student.amount_paid < student.annual_cost]
-    return render(request, 'sponsor_home.html', {'students': students})
+    students = [
+        student
+        for student in StudentApplication.objects.all()
+        if student.amount_paid < student.annual_cost
+    ]
+
+    total_contributed = sum(student.amount_paid for student in students)
+
+    total_balance = sum(
+        (student.annual_cost - student.amount_paid)
+        for student in students
+    )
+
+    return render(request, 'sponsor_home.html', {
+        'students': students,
+        'total_contributed': total_contributed,
+        'total_balance': total_balance,
+    })
+
+
+# @login_required
+# def sponsor_home(request):
+#     # Show students who still need sponsorship
+#     students = [student for student in StudentApplication.objects.all() 
+#                if student.amount_paid < student.annual_cost]
+#     return render(request, 'sponsor_home.html', {'students': students})
 
 
 
@@ -355,17 +376,27 @@ def sponsor(request, student_id):
 
 
 
-
-
-
-# Adding the mpesa functions
 @login_required
 def pay(request):
-    """ Renders the form to pay """
-    storage = messages.get_messages(request)
-    for _ in storage: 
-        pass
-    return render(request, 'pay.html')
+    students = StudentApplication.objects.all()
+
+    total_contributed = sum(student.amount_paid for student in students)
+    total_balance = sum(student.annual_cost - student.amount_paid for student in students)
+
+    return render(request, 'pay.html', {
+        'total_contributed': total_contributed,
+        'total_balance': total_balance,
+    })
+
+
+
+# @login_required
+# def pay(request):
+#     """ Renders the form to pay """
+#     storage = messages.get_messages(request)
+#     for _ in storage: 
+#         pass
+#     return render(request, 'pay.html')
 
 
 

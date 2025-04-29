@@ -62,7 +62,7 @@
             <p><strong>Balance:</strong> Ksh. {{ student.balance }}</p>
         </div>
 
-        <form method="POST">
+        <form method="POST" id="sponsorForm">
             {% csrf_token %}
             <div class="form-group">
                 <label for="sponsor_name">Your Name</label>
@@ -82,4 +82,27 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('sponsorForm').addEventListener('submit', function(event) {
+        event.preventDefault(); 
+
+       
+        const sponsorName = document.getElementById('sponsor_name').value;
+        const studentName = "{{ student.name }}";
+        const amountContributed = document.getElementById('amount_contributed').value;
+        
+      
+        const confirmationMessage = `Hey ${sponsorName},\n\nThank you for sponsoring ${studentName}.\nYou will be donating Ksh ${amountContributed}.\n\nPlease confirm to proceed to payment.`;
+
+        const userConfirmed = confirm(confirmationMessage);
+
+        if (userConfirmed) {
+            this.submit();
+        } else {
+            return false;
+        }
+    });
+</script>
+
 {% endblock %}
